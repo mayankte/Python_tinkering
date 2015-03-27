@@ -1,0 +1,176 @@
+## Ping pong game 
+
+# Implementation of  arcade game Pong , can be checked and played here :
+#http://www.codeskulptor.org/#user39_aZHocBTNQEnELjI.py
+
+
+#import simpleguitk as simplegui ## For generic run on any IDE, Ex: PyCharm
+import simplegui
+import random
+
+
+# initialize globals - pos and vel encode vertical info for paddles
+width = 600
+height = 400       
+
+ball_pos = [width/2, height/2]
+ball_vel = [3, 3] 
+ball_radius = 15
+grad = 1.2
+def_vel = 3
+
+pad_width = 8
+pad_height = 80
+
+half_pad_width = pad_width / 2
+half_pad_height = pad_height / 2
+
+left = False
+right = True
+ 
+pad1_score = 0
+pad2_score = 0
+
+paddle1_pos = 10
+paddle2_pos = 10
+paddle1_vel = 0
+paddle2_vel = 0
+
+# initialize ball_pos and ball_vel for new bal in middle of table
+# if direction is right, the ball's velocity is upper right, else upper left
+
+
+def spawn_ball(direction):
+    global ball_pos, ball_vel
+    ball_pos = [width/2, height/2]
+    if (direction == right):
+        ball_vel[0] =  -1 * grad * ball_vel[0]
+    elif (direction == left):
+        ball_vel[0] = -1 * grad * ball_vel[0]
+    
+    ball_vel[1] = random.randrange(-5, 5)
+    
+        
+
+# define event handlers
+def new_game():
+    global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel  # these are numbers
+    global pad1_score, pad2_score, ball_vel
+    
+    pad1_score = 0
+    pad2_score = 0
+    
+    ball_vel[0] = def_vel
+    ball_vel[1] = def_vel
+   
+    spawn_ball(left)
+    
+    
+def keydown(key):
+    global paddle1_vel, paddle2_vel
+    if(key == 83 or key == 115):
+        paddle1_vel += 5
+    elif(key == simplegui.KEY_MAP["down"] ):
+        paddle2_vel += 5
+    elif(key == 87 or key == 119):
+        paddle1_vel -= 5
+    elif(key == simplegui.KEY_MAP["up"]):
+        paddle2_vel -= 5
+        
+def keyup(key):
+    global paddle1_vel, paddle2_vel
+    if(key == 83 or key == 115):
+        paddle1_vel -= 5
+    elif(key == simplegui.KEY_MAP["down"] ):
+        paddle2_vel -= 5
+    elif(key == 87 or key == 119):
+        paddle1_vel += 5
+    elif(key == simplegui.KEY_MAP["up"]):
+        paddle2_vel += 5 
+        
+        
+       
+def draw(canvas):
+    global score1, score2, paddle1_pos, paddle2_pos, ball_pos, ball_vel
+    global pad1_score, pad2_score
+    
+    ball_pos[0] = ball_pos[0] + ball_vel[0]
+    ball_pos[1] = ball_pos[1] + ball_vel[1]
+    
+    if ( abs(ball_pos[1] - height) < 15 or ball_pos[1] < 15 ):
+        ball_vel[1] = -1 * ball_vel[1]    
+    elif ( abs(ball_pos[0] - (width - pad_width)) < 15):
+        pad1_score += 1
+        spawn_ball(left)
+    elif ( abs(ball_pos[0] - (pad_width)) < 15 ):
+        pad2_score += 1
+        spawn_ball(right)
+        
+    # determine whether paddle and ball collide    
+    if ( ((abs(ball_pos[0] - pad_width) < 20 )
+       and
+       ball_pos[1] > paddle1_pos
+       and
+       ball_pos[1] < paddle1_pos + pad_height)
+       or
+       ((abs(ball_pos[0] - (width - pad_width)) < 20)
+        and
+        ball_pos[1] > paddle2_pos
+        and
+        ball_pos[1] < paddle2_pos + pad_height
+        ) ):
+        ball_vel[0] = -1 * ball_vel[0]
+      
+    # draw mid line and gutters
+    canvas.draw_line([width / 2, 0],[width / 2, height], 5, "White")
+    canvas.draw_line([pad_width, 0],[pad_width, height], 5, "White")
+    canvas.draw_line([width - pad_width, 0],[width - pad_width, height], 5, "White")
+        
+    # draw ball
+    canvas.draw_circle(ball_pos, 15, 5, 'Yellow', 'yellow') 
+    
+    # update paddle's vertical position, keep paddle on the screen
+    paddle1_pos += paddle1_vel
+    paddle2_pos += paddle2_vel
+    
+    
+    # draw paddles
+    if(paddle1_pos  > height ):
+        paddle1_pos = 0
+    elif(paddle2_pos  > height ):
+        paddle2_pos = 0
+    elif(paddle1_pos + pad_height < 0 ):
+        paddle1_pos = ((height - 1) - pad_height)
+    elif(paddle2_pos + pad_height < 0 ):
+        paddle2_pos = ((height - 1) - pad_height)
+    
+    pad1 = canvas.draw_polygon([[0, paddle1_pos], 
+                        [pad_width, paddle1_pos],
+                        [pad_width, (paddle1_pos + pad_height)],
+                        [0, (paddle1_pos + pad_height)]], 12, 'Red')
+    
+    pad2 = canvas.draw_polygon([[width, paddle2_pos], 
+                        [width, (paddle2_pos + pad_height)],
+                        [(width - pad_width), (paddle2_pos + pad_height)],
+                        [(width - pad_width), paddle2_pos]], 
+                         12, 'Red')
+    # draw scores
+    p1_score = canvas.draw_text(str(pad1_score), (width/4, height/4), 30, 'Orange')
+    p2_score = canvas.draw_text(str(pad2_score), (0.75 * width, height/4), 30, 'Orange')
+    
+    # Restart Game
+    if (pad1_score + pad2_score == 11):
+        new_game()
+        
+# create frame
+frame = simplegui.create_frame("Mnk PingPong TP", width, height)
+frame.set_draw_handler(draw)
+frame.set_keydown_handler(keydown)
+frame.set_keyup_handler(keyup)
+
+frame.set_canvas_background('Green')
+
+
+# start frame  n game
+new_game()
+frame.start()
