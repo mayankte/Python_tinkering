@@ -1,7 +1,7 @@
 ## Ping pong game ; Controls : W,S,Up,Down keys
 
 # Implementation of  arcade game Pong , can be checked and played here :
-#http://www.codeskulptor.org/#user39_aZHocBTNQEnELjI.py
+#http://www.codeskulptor.org/#user39_OxpuAYXfn1XdCFk.py
 
 
 #import simpleguitk as simplegui ## For generic run on any IDE, Ex: PyCharm
@@ -65,6 +65,8 @@ def new_game():
    
     spawn_ball(left)
     
+def b1_handler():
+    new_game()
     
 def keydown(key):
     global paddle1_vel, paddle2_vel
@@ -159,7 +161,7 @@ def draw(canvas):
     p2_score = canvas.draw_text(str(pad2_score), (0.75 * width, height/4), 30, 'Orange')
     
     # Restart Game
-    if (pad1_score + pad2_score == 11):
+    if (pad1_score + pad2_score == 13):
         new_game()
         
 # create frame
@@ -167,6 +169,7 @@ frame = simplegui.create_frame("Mnk PingPong TP", width, height)
 frame.set_draw_handler(draw)
 frame.set_keydown_handler(keydown)
 frame.set_keyup_handler(keyup)
+frame.add_button('Restart', b1_handler, 200)
 
 frame.set_canvas_background('Green')
 
