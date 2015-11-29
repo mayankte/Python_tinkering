@@ -1,0 +1,41 @@
+
+
+### Crawler For Synonym scraping s###
+### for a given list,ka of words , extract/scape all the synonyms as listed by synonym.com website ####
+### Handles basic Site Error in case of a word Miss ###
+### Holds final asnwer in a list of lists (vlist) , with first word in every list element as the input word ###
+
+################## Python Web Scarpper #############
+
+import urllib2
+from bs4 import BeautifulSoup
+from datetime import datetime
+
+start =  datetime.now()
+
+ulist = []
+for i in ka[1:5]:
+    syn = "http://www.synonym.com/synonyms/" + i
+    try:
+        page = urllib2.urlopen(syn)
+    except Exception, e:
+        print e
+        print ('Word not found : ' + str(i)) 
+        continue
+    soup = BeautifulSoup(page)
+    soup.notification    
+    soup.a.string
+    soup.prettify
+    values = soup.find_all("a")    
+    
+    vlist = [i]
+    for value in values:
+         if 'synonyms' in str(value.get('href')):
+             vlist.append(str(value.get('href')).split("/")[2])
+    ulist.append(vlist)
+
+print datetime.now() - start    
+
+#################################################################################################
+### For a crawler , scrape all links and make a list , similar to ka and then hit each link #####
+### Make ka as list of list for multi-level scraping ###
