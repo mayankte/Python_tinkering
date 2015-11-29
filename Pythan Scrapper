@@ -23,9 +23,9 @@ for i in ka[1:5]:
         print ('Word not found : ' + str(i)) 
         continue
     soup = BeautifulSoup(page)
-    soup.notification    
-    soup.a.string
-    soup.prettify
+    #soup.notification    
+    #soup.a.string
+    #soup.prettify
     values = soup.find_all("a")    
     
     vlist = [i]
